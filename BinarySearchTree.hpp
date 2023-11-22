@@ -421,29 +421,18 @@ private:
   static Node * insert_impl(Node *node, const T &item, Compare less) {
     if(node == nullptr) {
       Node* temp = new Node();
+      temp->left = nullptr;
+      temp->right = nullptr;
       temp->datum = item;
       return temp;
     }
 
-    if(less(item, node->datum)) {
-      if(node->left) return insert_impl(node, item, less);
+    if(less(item, node->datum))
+      node->left = insert_impl(node->left, item, less);
+    else if(less(node->datum, item))
+      node->right = insert_impl(node->right, item, less);
 
-      Node* temp = new Node();
-      temp->datum = item;
-      node->left = temp;
-
-      return temp;
-    } else if(less(node->datum, item)) {
-      if(node->right) return insert_impl(node, item, less);
-
-      Node* temp = new Node();
-      temp->datum = item;
-      node->right = temp;
-
-      return temp;
-    }
-
-    return nullptr;
+    return node;
   }
 
   // EFFECTS : Returns a pointer to the Node containing the minimum element
@@ -479,7 +468,16 @@ private:
   //          rooted at 'node'.
   // NOTE:    This function must be tree recursive.
   static bool check_sorting_invariant_impl(const Node *node, Compare less) {
-    assert(false);
+    if(!node)
+      return true;
+
+    if((node->left && !less(node->left->datum, node->datum)) 
+      || (node->right && less(node->right->datum, node->datum)
+    ))
+      return false;
+
+    return check_sorting_invariant_impl(node->left, less) 
+      && check_sorting_invariant_impl(node->right, less);
   }
 
   // EFFECTS : Traverses the tree rooted at 'node' using an in-order traversal,
@@ -495,7 +493,7 @@ private:
 
     traverse_inorder_impl(node->left, os);
     os << node->datum << " ";
-    traverse_inorder_impl(node, os);
+    traverse_inorder_impl(node->right, os);
   }
 
   // EFFECTS : Traverses the tree rooted at 'node' using a pre-order traversal,
@@ -533,8 +531,9 @@ private:
 
     if(less(val, node->datum))
       res = min_greater_than_impl(node->left, val, less);
-    else if(less(node->datum, val))
+    else
       res = min_greater_than_impl(node->right, val, less);
+      
     if(less(val, node->datum) && res == nullptr)
       res = node;
 
