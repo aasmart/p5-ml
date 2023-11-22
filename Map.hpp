@@ -32,6 +32,10 @@ private:
 
   // A custom comparator
   class PairComp {
+  public:
+    bool operator()(const Pair_type& a, const Pair_type& b) const {
+      return Key_compare{}(a.first, b.first);
+    }
   };
 
 public:
@@ -111,7 +115,7 @@ public:
   Iterator end() const;
 
 private:
-  // Add a BinarySearchTree private member HERE.
+  BinarySearchTree<Pair_type, PairComp> _tree;
 };
 
 // You may implement member functions below using an "out-of-line" definition
@@ -124,5 +128,46 @@ private:
 //    typename Map<K, V, C>::Iterator Map<K, V, C>::begin() const {
 //      // YOUR IMPLEMENTATION GOES HERE
 //    }
+
+template <typename K, typename V, typename C>
+bool Map<K, V, C>::empty() const {
+  return _tree.empty();
+}
+
+template <typename K, typename V, typename C>
+size_t Map<K, V, C>::size() const {
+  return _tree.size();
+}
+
+template <typename K, typename V, typename C>
+typename Map<K, V, C>::Iterator Map<K, V, C>::find(const K& key) const {
+  return _tree.find(std::pair{key, V()});
+}
+
+template <typename K, typename V, typename C>
+V& Map<K, V, C>::operator[](const K& key) {
+  auto element = find(key);
+  if(element != end())
+    return (*element).second;
+  return (*(insert(std::pair{key, V()}).first)).second;
+}
+
+template <typename K, typename V, typename C>
+std::pair<typename Map<K, V, C>::Iterator, bool> Map<K, V, C>::insert(const Pair_type& val) {
+  auto it = find(val.first);
+  if(it == end())
+    return std::pair{_tree.insert(val), true};
+  return std::pair{it, false};
+}
+
+template <typename K, typename V, typename C>
+typename Map<K, V, C>::Iterator Map<K, V, C>::begin() const {
+  return _tree.begin();
+}
+
+template <typename K, typename V, typename C>
+typename Map<K, V, C>::Iterator Map<K, V, C>::end() const {
+  return _tree.end();
+}
 
 #endif // DO NOT REMOVE!!!
