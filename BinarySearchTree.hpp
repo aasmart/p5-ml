@@ -419,13 +419,8 @@ private:
   //       template, NOT according to the < operator. Use the "less"
   //       parameter to compare elements.
   static Node * insert_impl(Node *node, const T &item, Compare less) {
-    if(node == nullptr) {
-      Node* temp = new Node();
-      temp->left = nullptr;
-      temp->right = nullptr;
-      temp->datum = item;
-      return temp;
-    }
+    if(!node)
+      node = new Node{item, nullptr, nullptr};
 
     if(less(item, node->datum))
       node->left = insert_impl(node->left, item, less);
