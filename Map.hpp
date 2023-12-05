@@ -153,7 +153,9 @@ V& Map<K, V, C>::operator[](const K& key) {
 }
 
 template <typename K, typename V, typename C>
-std::pair<typename Map<K, V, C>::Iterator, bool> Map<K, V, C>::insert(const Pair_type& val) {
+std::pair<typename Map<K, V, C>::Iterator, bool> Map<K, V, C>::insert(
+  const Pair_type& val
+) {
   auto it = find(val.first);
   if(it == end())
     return std::pair{_tree.insert(val), true};
