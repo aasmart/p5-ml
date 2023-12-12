@@ -204,17 +204,20 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+    if(argc == 4) {
+        std::string debugStr = argv[3];
+        if(debugStr != "--debug") {
+            printError();
+            return 4;
+        }
+    }
+
     std::string trainFileName = argv[1];
     std::string testFileName = argv[2];
 
     try {
         csvstream trainCsv{trainFileName};
         csvstream testCsv{testFileName};
-
-        if(argc == 4 && strcmp(argv[3], "--debug") != 0) {
-            printError();
-            return 4;
-        }
 
         const bool debug = argc == 4;
         Classifier classifier(debug);
