@@ -458,6 +458,43 @@ private:
     return max_element_impl(node->right);
   }
 
+  static const Node* find_max(const Node* node, Compare less) {
+    if(!node)
+      return nullptr;
+    if(!node->left && !node->right)
+      return node;
+
+    const Node* left = find_max(node->left, less);
+    const Node* right = find_max(node->right, less);
+
+    const Node* res;
+    if(!left)
+      res = right;
+    else if(!right)
+      res = left;
+    else
+      res = (less(left->datum, right->datum)) ? right : left;
+    return (less(node->datum, res->datum)) ? res : node;
+  }
+
+  static const Node* find_min(const Node* node, Compare less) {
+    if(!node)
+      return nullptr;
+    if(!node->left && !node->right)
+      return node;
+
+    const Node* left = find_min(node->left, less);
+    const Node* right = find_min(node->right, less);
+
+    const Node* res;
+    if(!left)
+      res = right;
+    else if(!right)
+      res = left;
+    else
+      res = (!less(right->datum, left->datum)) ? left : right;
+    return (!less(res->datum, node->datum)) ? node : res;
+  }
 
   // EFFECTS: Returns whether the sorting invariant holds on the tree
   //          rooted at 'node'.
@@ -466,13 +503,12 @@ private:
     if(!node)
       return true;
 
-    if((node->left && !less(node->left->datum, node->datum)) 
-      || (node->right && less(node->right->datum, node->datum)
-    ))
+    const Node* max = find_max(node->left, less);
+    const Node* min = find_min(node->right, less);
+    if((max && !less(max->datum, node->datum)) || (min && less(min->datum, node->datum)))
       return false;
 
-    return check_sorting_invariant_impl(node->left, less) 
-      && check_sorting_invariant_impl(node->right, less);
+    return check_sorting_invariant_impl(node->left, less) && check_sorting_invariant_impl(node->right, less);
   }
 
   // EFFECTS : Traverses the tree rooted at 'node' using an in-order traversal,

@@ -159,6 +159,23 @@ TEST(sorting_invariant_empty) {
     ASSERT_TRUE(tree.check_sorting_invariant());
 }
 
+TEST(sorting_invariant_nested) {
+    BinarySearchTree<int> tree;
+    tree.insert(4);
+    tree.insert(7);
+    tree.insert(2);
+    tree.insert(1);
+    tree.insert(3);
+
+    auto it = tree.begin();
+    ++it;
+    ++it;
+    *it = 5;
+    ++it;
+
+    ASSERT_FALSE(tree.check_sorting_invariant());
+}
+
 TEST(traversal) {
     BinarySearchTree<int> tree;
     tree.insert(10);
@@ -173,7 +190,7 @@ TEST(traversal) {
 
     std::stringstream inorder;
     tree.traverse_inorder(inorder);
-    ASSERT_EQUAL(inorder.str(), "5 7 10 12 ")
+    ASSERT_EQUAL(inorder.str(), "5 7 10 12 ");
 }
 
 TEST(traversal_single) {
